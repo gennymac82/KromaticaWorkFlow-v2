@@ -1,5 +1,5 @@
 const BASE_GS_URL="https://script.google.com/macros/s/AKfycbwzcBv7TCNV8GZQ9dNO0-F07togSqKIHVvaynE-1E6Jr8w4lFumEPACStIGs2TidRXo/exec";
-const API_KEY="gennaro-kromatica-2025-key";
+const API_KEY="5110";
 const routes=["home","riepilogo","saldo"];
 function show(r){routes.forEach(x=>document.getElementById("page-"+x).classList.toggle("hidden",x!==r));location.hash="#"+r;}
 window.addEventListener("hashchange",()=>{const r=(location.hash.replace("#","")||"home");show(routes.includes(r)?r:"home");});
