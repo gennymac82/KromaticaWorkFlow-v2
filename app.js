@@ -1,4 +1,4 @@
-const BASE_GS_URL="https://script.google.com/macros/s/AKfycbwzcBv7TCNV8GZQ9dNO0-F07togSqKIHVvaynE-1E6Jr8w4lFumEPACStIGs2TidRXo/exec";
+const BASE_GS_URL="https://script.google.com/macros/s/AKfycbwc898t5ajSwr-hD8Ze8d0NTt6Z4pamavCgq7KbMjZwhTsyNa2PfO2DGsINVZXHy9jd/exec";
 const API_KEY="5110";
 const routes=["home","riepilogo","saldo"];
 function show(r){routes.forEach(x=>document.getElementById("page-"+x).classList.toggle("hidden",x!==r));location.hash="#"+r;}
