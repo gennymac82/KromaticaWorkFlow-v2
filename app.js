@@ -37,6 +37,7 @@ window.addEventListener("load", () => {
     e.preventDefault();
 
     const payload = {
+      api_key: API_KEY,
       id: generateId(),
       date: dateEl.value,
       description: description.value,
@@ -45,23 +46,22 @@ window.addEventListener("load", () => {
       expense: expense.value
     };
 
-    const realUrl = BASE_GS_URL + "?key=" + encodeURIComponent(API_KEY);
-    const url = "https://corsproxy.io/?url=" + encodeURIComponent(realUrl);
-
-    let r = await fetch(url, {
+    let r = await fetch(BASE_GS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ api_key: API_KEY, ...payload })
+      body: JSON.stringify(payload)
     });
 
     let t = await r.text();
-    try { t = JSON.parse(t); } catch {}
+    let data;
+    try { data = JSON.parse(t); } catch { data = { ok: false, error: t }; }
 
-    status.textContent = t.ok ? "✅ Salvato" : "⚠️ Errore";
-
-    if (t.ok) {
+    if (data.ok) {
+      status.textContent = "✅ Movimento salvato";
       document.getElementById("cashForm").reset();
       dateEl.valueAsDate = new Date();
+    } else {
+      status.textContent = "⚠️ Errore: " + (data.error || "dati non validi");
     }
   };
 
@@ -72,28 +72,22 @@ window.addEventListener("load", () => {
     const m = repMonth.value;
     const c = repCategory.value;
 
-    const realUrl =
-      BASE_GS_URL +
-      "?key=" + API_KEY +
-      "&action=list" +
-      "&month=" + m +
-      (c ? "&category=" + c : "");
+    const url = `${BASE_GS_URL}?key=${API_KEY}&action=list&month=${m}${c ? `&category=${c}` : ""}`;
 
-    const url = "https://corsproxy.io/?url=" + encodeURIComponent(realUrl);
+    let r = await fetch(url);
+    let data = await r.json();
 
-    const r = await fetch(url);
-    const t = JSON.parse(await r.text());
-
-    if (!t.ok || !t.rows || !t.rows.length) {
+    if (!data.ok || !data.rows || !data.rows.length) {
       repContainer.innerHTML = "<div>Nessun movimento</div>";
       return;
     }
 
-    // ✅ VERSIONE SENZA ID
     let h =
-      '<table class="table"><tr><th>Data</th><th>Descrizione</th><th>Categoria</th><th>Entrata</th><th>Uscita</th></tr>';
+      `<table class="table"><tr>
+        <th>Data</th><th>Descrizione</th><th>Categoria</th><th>Entrata (€)</th><th>Uscita (€)</th>
+      </tr>`;
 
-    t.rows.forEach(x => {
+    data.rows.forEach(x => {
       h += `<tr>
               <td>${x.Data}</td>
               <td>${x.Descrizione}</td>
@@ -112,29 +106,24 @@ window.addEventListener("load", () => {
 
   btnLoadSummary.onclick = async () => {
     const m = sumMonth.value;
+    const url = `${BASE_GS_URL}?key=${API_KEY}&action=summary&month=${m}`;
 
-    const realUrl =
-      BASE_GS_URL +
-      "?key=" + API_KEY +
-      "&action=summary" +
-      "&month=" + m;
+    let r = await fetch(url);
+    let data = await r.json();
 
-    const url = "https://corsproxy.io/?url=" + encodeURIComponent(realUrl);
-
-    const r = await fetch(url);
-    const t = JSON.parse(await r.text());
-
-    if (!t.ok) {
+    if (!data.ok) {
       sumContainer.textContent = "Nessun dato";
       return;
     }
 
-    const e = t.totals.entrate || 0;
-    const u = t.totals.uscite || 0;
+    const e = data.totals.entrate || 0;
+    const u = data.totals.uscite || 0;
     const saldo = e - u;
 
-    sumContainer.innerHTML =
-      `Entrate: <b>€${e}</b><br>Uscite: <b>€${u}</b><br><br>
-       <b>Saldo: €${saldo}</b>`;
+    sumContainer.innerHTML = `
+      Entrate: <b>€${e}</b><br>
+      Uscite: <b>€${u}</b><br><br>
+      Saldo: <b>€${saldo}</b>
+    `;
   };
 });
