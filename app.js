@@ -1,5 +1,5 @@
 // === CONFIG ===
-const BASE_GS_URL = "https://script.google.com/macros/s/AKfycbwc898t5ajSwr-hD8Ze8d0NTt6Z4pamavCgq7KbMjZwhTsyNa2PfO2DGsINVZXHy9jd/exec";
+const BASE_GS_URL = "https://script.google.com/macros/s/AKfycbz7crNSGI-MPfw7IJ8XYN0sklAyA0q91k3RcBTZty73U6Sff2E8JQnWZepjlJfmCCol/exec";
 const API_KEY = "5110";
 
 // === ROTTE ===
